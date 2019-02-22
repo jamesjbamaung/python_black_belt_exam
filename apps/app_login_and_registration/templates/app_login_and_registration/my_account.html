@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=\, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+<body>
+    <a href="/quotes">Back to the quotes</a>
+    <a href="/log_out">Log out</a>
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    <h1>Edit Your Account</h1>
+    <h3>{{logged_user.first_name}} {{logged_user.last_name}}</h3>
+    <form action='/edit_account' method='post'>
+        {% csrf_token %}
+        First Name: <input type='text' name='first_name' value="{{logged_user.first_name}}">
+        <br>
+        Last Name: <input type='text' name='last_name' value="{{logged_user.last_name}}">
+        <br>
+        Email: <input type='text' name='email' value='{{logged_user.email}}'>
+        <br>
+        Updated Password: <input type='password' name='password'>
+        <br>
+        Confirm Updated Password: <input type='password' name='confirm_password'>
+        <input type='submit' value='Edit Account'>
+    </form>
+</body>
+</html>

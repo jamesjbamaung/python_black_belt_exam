@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+
+    <style>
+        #welcome{
+            display: inline-block;
+        }
+        #info{
+            margin-left: 480px;
+            display: inline-block;
+        }
+        #quote {
+            display: inline-block;
+            color: blue;
+        }
+
+        #post {
+            margin-left: 100px;
+            display: inline-block;
+            color: red;
+            vertical-align: top;
+        }
+
+        .comment {
+            color: purple;
+        }
+
+        .author {
+            color: orange;
+        }
+
+        .author_quote {
+            color: green;
+        }
+
+        .likes {
+            color: pink;
+        }
+
+        .likes_comment {
+            color: gold
+        }
+
+        .poster_info {
+            color: black;
+        }
+        #border{
+            border: 2px solid black;
+        }
+    </style>
+</head>
+
+<body>
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    <div>
+        <div id="welcome">
+            <h1>Hello {{logged_user.first_name}} {{logged_user.last_name}}</h1>
+        </div>
+
+        <div id="info">
+            <a href="/log_out">Log out</a>
+            <br>
+            <a href="my_account/{{request.session.user_id}}">My Account</a>
+        </div>
+
+    </div>
+
+
+    <br>
+    <br>
+    <br>
+
+
+    <div>
+
+        <div id="quote">
+            {% for quote in quotes reversed %}
+            <div id="border">
+                <h3 class="poster_info"> Posted By: {{quote.user.first_name}} {{quote.user.last_name}} {{quote.created_at}}</h3>
+                <h5 class="author">{{quote.author}}</h5>
+                <p class="author_quote">{{quote.quote}}</p>
+
+
+                <p class="likes">liked {{quote.like.count}} times <a href="/like_quote/{{quote.id}}">like</a></p>
+
+
+                {% for like in quote.like.all %}
+                {% if not like.id != request.session.user_id %}
+                <p>I liked this already. I can only like a post once.</p>
+
+
+                {% endif %}
+                {% endfor %}
+
+
+
+
+                {% if quote.user.id == request.session.user_id %}
+                <a href="delete_quote/{{quote.id}}">Delete Message</a>
+                {%endif%}
+
+
+
+                <a href="posted_by_user/{{quote.user.id}}">Posted By</a>
+
+
+                <form action='/comments' method='post'>
+                    {% csrf_token %}
+                    <input name="quote" type="hidden" value="{{quote.id}}">
+                    comment <textarea style='resize: none' name="comment"></textarea>
+                    <input type='submit' value='Comment'>
+                </form>
+                {% for comment in quote.comments.all reversed %}
+
+                <h5 class="comment">Comment By: {{comment.user.first_name}} {{comment.user.last_name}} {{comment.created_at}}</h5>
+                <p class="comment">{{comment.comment}}</p>
+
+                <p class="likes_comment">liked {{comment.like.count}} times <a
+                        href="/like_comment/{{comment.id}}">like</a></p>
+
+                {% for like in comment.like.all %}
+                {% if not like.id != request.session.user_id %}
+                <p>I liked this already. I can only like a comment once.</p>
+
+
+                {% endif %}
+                {% endfor %}
+
+                {% endfor %}
+            </div>
+            <br>
+            {% endfor %}
+
+        </div>
+
+        <div id="post">
+            <form action='/post_quote' method='post'>
+                {% csrf_token %}
+                <h3>Post a Quote</h3>
+                Author: <input type='text' name='author'>
+                Quote: <textarea style='resize: none' name="quote"></textarea>
+                <input type='submit' value='Post'>
+            </form>
+        </div>
+    </div>
+
+
+</body>
+
+</html>
